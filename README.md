@@ -121,7 +121,7 @@ selimcam status
 
 | Component | Specification | Notes |
 |-----------|---------------|-------|
-| **Board** | Raspberry Pi 3 Model B+ | 1GB RAM minimum |
+| **Board** | Raspberry Pi 3A+ | 512MB RAM (fixed target) |
 | **Storage** | 16GB microSD (Class 10) | 32GB+ recommended |
 | **Camera** | OV5647 5MP or IMX219 8MP | Pi Camera v1/v2 |
 | **Display** | 800x480 DSI LCD | Waveshare 4.3" recommended |
@@ -129,12 +129,12 @@ selimcam status
 
 ### Full Build (Recommended)
 
-See [HARDWARE.md](docs/HARDWARE.md) for complete BOM and wiring diagram.
+See [HARDWARE.md](HARDWARE.md) for complete BOM and wiring diagram.
 
 **Estimated Cost:** $220-240 USD
 
 **Key Components:**
-- Raspberry Pi 3B+ + accessories: $50
+- Raspberry Pi 3A+ + accessories: $50
 - Waveshare 4.3" DSI LCD: $45
 - Power system (UPS HAT + battery): $45
 - Haptic driver (DRV2605L + LRA): $11
@@ -308,8 +308,8 @@ selimcam/
 
 ## 📚 Documentation
 
-- **[HARDWARE.md](docs/HARDWARE.md)** - Complete wiring diagrams, BOM, safety notes
-- **[DEVELOPER_NOTES.md](docs/DEVELOPER_NOTES.md)** - Porting to Pi 4, extending features
+- **[HARDWARE.md](HARDWARE.md)** - Complete wiring diagrams, BOM, safety notes
+- **[DEVELOPER_NOTES.md](DEVELOPER_NOTES.md)** - Pi 3A+ tuning, extensions
 - **[API.md](docs/API.md)** - API reference for custom integration
 - **[CHANGELOG.md](CHANGELOG.md)** - Version history
 - **[CONTRIBUTING.md](CONTRIBUTING.md)** - Contribution guidelines
@@ -476,3 +476,14 @@ MIT License - see [LICENSE](LICENSE) file for details.
 [⬆ back to top](#selimcam-v60---professional-camera-software-for-raspberry-pi)
 
 </div>
+
+
+## Diagnostics
+
+Run hardware diagnostics after install:
+
+```bash
+python3 diagnostics.py
+```
+
+Expected I2C devices: DRV2605L (0x5A), BH1750 (0x23).

@@ -10,14 +10,14 @@ This document provides technical guidance for:
 
 ## 🔄 Porting to Different Pi Models
 
-### Raspberry Pi 4 (Recommended Upgrade)
+### Raspberry Pi 3A+ (Production Baseline)
 
 **Benefits:**
-- 4GB/8GB RAM (vs 1GB on Pi 3B+)
-- Faster CPU (1.5GHz quad-core Cortex-A72 vs 1.4GHz A53)
-- USB 3.0 for faster storage
-- Gigabit Ethernet
-- Dual 4K display support
+- 512MB RAM production target; optimize and bound all queues/caches
+- Smaller power budget and memory headroom; keep preview and UI paths bounded
+- Prefer SD-card sequential writes and async save queue
+- Keep networking optional/off by default
+- Single 800x480 display target for lowest compositing load
 
 **Changes Required:**
 
@@ -53,7 +53,7 @@ This document provides technical guidance for:
    - Allocate more GPU memory (512MB vs 256MB)
    ```bash
    # /boot/config.txt
-   gpu_mem=512
+   gpu_mem=128
    ```
 
 ### Raspberry Pi 5
