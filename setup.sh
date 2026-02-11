@@ -194,14 +194,14 @@ User=$USER_NAME
 WorkingDirectory=$INSTALL_DIR
 Environment="DISPLAY=:0"
 Environment="PYTHONUNBUFFERED=1"
-ExecStart=/usr/bin/python3 $INSTALL_DIR/main.py
+ExecStart=/usr/bin/python3 $INSTALL_DIR/main_pi_prod.py
 Restart=on-failure
 RestartSec=5
 StandardOutput=append:/var/lib/selimcam/logs/selimcam.log
 StandardError=append:/var/lib/selimcam/logs/selimcam_error.log
 
 # Resource limits
-MemoryLimit=512M
+MemoryLimit=420M
 CPUQuota=200%
 
 # Watchdog
@@ -428,3 +428,7 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
     log_info "Rebooting..."
     reboot
 fi
+
+
+log_info "Running optional diagnostics..."
+python3 /opt/selimcam/diagnostics.py || log_warn "Diagnostics skipped/failed"

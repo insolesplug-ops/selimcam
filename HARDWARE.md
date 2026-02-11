@@ -8,7 +8,7 @@
 | Item | Part Number | Description | Quantity | Source | Price (approx) |
 |------|-------------|-------------|----------|--------|----------------|
 | **Compute** |
-| Raspberry Pi 3 Model B+ | RPi 3B+ | 1.4GHz quad-core, 1GB RAM | 1 | Raspberry Pi Foundation | $35 |
+| Raspberry Pi 3A+ | RPi 3A+ | 1.4GHz quad-core, 512MB RAM | 1 | Raspberry Pi Foundation | $35 |
 | MicroSD Card | SanDisk Extreme PRO 64GB A2 | Application Performance Class 2 | 1 | SanDisk | $15 |
 | **Display** |
 | DSI LCD | Waveshare 4.3" DSI LCD | 800x480, capacitive touch | 1 | Waveshare | $45 |

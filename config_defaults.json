@@ -1,0 +1,27 @@
+{
+  "device": "rpi3a_plus_512mb",
+  "preview": {
+    "width": 640,
+    "height": 480,
+    "fps": 30,
+    "proxy_width": 160,
+    "proxy_height": 120
+  },
+  "memory": {
+    "max_rss_mb": 380,
+    "frame_queue_max": 3,
+    "save_queue_max": 4,
+    "thumb_cache_items": 48
+  },
+  "ui": {
+    "matte_overlay": true,
+    "touch_target_px": 48,
+    "tap_scale": 0.94,
+    "tap_anim_ms": 100,
+    "rotation_ms": 220
+  },
+  "haptics": {
+    "enabled": true,
+    "strength": 0.6
+  }
+}

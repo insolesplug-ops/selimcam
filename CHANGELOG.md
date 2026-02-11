@@ -5,6 +5,18 @@ All notable changes to SelimCam will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+
+## [6.0.1] - 2026-02-11
+
+### Fixed
+- Corrected hardware baseline to Raspberry Pi 3A+ with 512MB RAM across docs/setup.
+- Removed glassmorphism styling in PC simulator and switched to matte UI surfaces.
+- Reworked camera service for bounded async save queue and safer preview pumping.
+- Added Pi diagnostics script, config schema/defaults, and checked-in systemd unit file.
+
+### Performance
+- Added benchmark metrics for frame-time, input latency, queue depth, and RSS memory.
+
 ## [6.0.0] - 2025-02-11
 
 ### 🎉 Major Release - Production Ready
