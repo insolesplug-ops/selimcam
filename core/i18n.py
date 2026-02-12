@@ -17,6 +17,8 @@ I18N = {
         "ready": "Ready",
         "saved": "Saved",
         "sidebar": "Controls",
+        "back": "Back",
+        "preview": "Preview",
     },
     "de": {
         "mode": "PRO",
@@ -34,5 +36,7 @@ I18N = {
         "ready": "Bereit",
         "saved": "Gespeichert",
         "sidebar": "Kontrollen",
+        "back": "Zurück",
+        "preview": "Vorschau",
     },
 }

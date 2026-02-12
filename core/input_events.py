@@ -19,6 +19,7 @@ class EventType(Enum):
     TOGGLE_GRID = auto()
     TOGGLE_LEVEL = auto()
     TOGGLE_LANG = auto()
+    TOGGLE_DEBUG = auto()
     BACK = auto()
 
 

@@ -48,7 +48,7 @@ class PCIOAdapter:
                     pygame.K_t: EventType.TOGGLE_LANG,
                     pygame.K_s: EventType.SHUTDOWN,
                     pygame.K_f: EventType.FLASH_TOGGLE,
-                    pygame.K_F1: EventType.ENCODER_PRESS,
+                    pygame.K_F1: EventType.TOGGLE_DEBUG,
                 }
                 if event.key in keymap:
                     delta = -1 if event.key == pygame.K_LEFT else 1 if event.key == pygame.K_RIGHT else 0

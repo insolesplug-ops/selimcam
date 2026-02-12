@@ -12,7 +12,7 @@ from core.input_events import EventType, InputEvent
 
 FILTERS = ["none", "vintage", "bw", "vivid", "portrait"]
 GRID_MODES = ["off", "thirds", "center"]
-LEVEL_MODES = ["off", "line", "bubble"]
+LEVEL_MODES = ["off", "line"]
 
 
 class Scene(Enum):
@@ -24,6 +24,7 @@ class Scene(Enum):
 class AppState:
     lang: str = "en"
     scene: Scene = Scene.CAMERA
+    nav_stack: List[Scene] = field(default_factory=lambda: [Scene.CAMERA])
     filter_idx: int = 0
     grid_mode_idx: int = 0
     level_mode_idx: int = 0
@@ -35,12 +36,13 @@ class AppState:
     touch_down: bool = False
     touch_pos: Tuple[int, int] = (0, 0)
     touch_target: Optional[str] = None
+    pressed_until: float = 0.0
     toast: str = ""
     toast_until: float = 0.0
     freeze_until: float = 0.0
     last_input_latency_ms: float = 0.0
     debug_overlay: bool = False
-    show_ui: bool = True
+    preview_mode: str = "DEMO_IMAGE"
     iso: int = 400
     shutter: str = "1/250"
     ev: float = 0.0
@@ -87,6 +89,23 @@ class AppController:
         self.state.dirty_rects.clear()
         return rects
 
+    def push_scene(self, scene: Scene):
+        s = self.state
+        if s.scene != scene:
+            s.scene = scene
+            s.nav_stack.append(scene)
+
+    def back(self):
+        s = self.state
+        if s.sidebar_open:
+            s.sidebar_open = False
+            return
+        if len(s.nav_stack) > 1:
+            s.nav_stack.pop()
+            s.scene = s.nav_stack[-1]
+            return
+        s.shutdown_requested = True
+
     def _hit(self, p: Tuple[int, int]) -> Optional[str]:
         x, y = p
         for key, (rx, ry, rw, rh) in self.hitboxes.items():
@@ -98,51 +117,47 @@ class AppController:
         s = self.state
         if key is None:
             return
-        if key == "handle":
+        s.pressed_until = time.perf_counter() + 0.11
+
+        if key == "back":
+            self.back()
+        elif key == "handle":
             s.sidebar_open = not s.sidebar_open
-            self.mark_all_dirty()
         elif key == "capture":
             s.toast = s.t("capture")
             s.toast_until = time.perf_counter() + 0.6
             s.freeze_until = time.perf_counter() + 0.6
-            self.mark_all_dirty()
         elif key == "thumb":
-            s.scene = Scene.GALLERY
-            self.mark_all_dirty()
+            self.push_scene(Scene.GALLERY)
         elif key == "filter_wheel":
             s.filter_idx = (s.filter_idx + 1) % len(FILTERS)
-            self.mark_all_dirty()
         elif key == "grid":
             s.grid_mode_idx = (s.grid_mode_idx + 1) % len(GRID_MODES)
-            self.mark_all_dirty()
         elif key == "level":
             s.level_mode_idx = (s.level_mode_idx + 1) % len(LEVEL_MODES)
-            self.mark_all_dirty()
         elif key == "lang":
             s.lang = "de" if s.lang == "en" else "en"
-            self.mark_all_dirty()
         elif key == "gallery_prev":
             s.gallery_index = max(0, s.gallery_index - 1)
-            self.mark_all_dirty()
         elif key == "gallery_next":
-            s.gallery_index = min(9, s.gallery_index + 1)
-            self.mark_all_dirty()
+            s.gallery_index += 1
+        self.mark_all_dirty()
 
     def _update_sidebar_drag(self, pos: Tuple[int, int]):
         s = self.state
-        if s.touch_target == "haptics":
-            _, _, w, _ = self.hitboxes.get("haptics", (0, 0, 1, 1))
-            x = max(self.hitboxes["haptics"][0], min(self.hitboxes["haptics"][0] + w, pos[0]))
-            s.haptics_strength = (x - self.hitboxes["haptics"][0]) / max(1, w)
+        if s.touch_target == "haptics" and "haptics" in self.hitboxes:
+            x0, _, w, _ = self.hitboxes["haptics"]
+            x = max(x0, min(x0 + w, pos[0]))
+            s.haptics_strength = (x - x0) / max(1, w)
             self.mark_all_dirty()
 
     def tick(self, dt: float):
         s = self.state
         target = 1.0 if s.sidebar_open else 0.0
-        s.sidebar_anim += (target - s.sidebar_anim) * min(1.0, dt * 12.0)
-        if s.scene == Scene.GALLERY and abs(s.gallery_velocity) > 0.1:
+        s.sidebar_anim += (target - s.sidebar_anim) * min(1.0, dt * 8.0)
+        if s.scene == Scene.GALLERY and abs(s.gallery_velocity) > 0.01:
             s.gallery_swipe_x += s.gallery_velocity * dt
-            s.gallery_velocity *= 0.9
+            s.gallery_velocity *= 0.88
             self.mark_all_dirty()
         if s.toast and time.perf_counter() > s.toast_until:
             s.toast = ""
@@ -156,6 +171,9 @@ class AppController:
             s.filter_idx = (s.filter_idx + (1 if event.delta >= 0 else -1)) % len(FILTERS)
             self.mark_all_dirty()
         elif event.type == EventType.ENCODER_PRESS:
+            s.sidebar_open = not s.sidebar_open
+            self.mark_all_dirty()
+        elif event.type == EventType.TOGGLE_DEBUG:
             s.debug_overlay = not s.debug_overlay
             self.mark_all_dirty()
         elif event.type == EventType.TOGGLE_GRID:
@@ -178,12 +196,7 @@ class AppController:
         elif event.type == EventType.SHUTDOWN:
             s.shutdown_requested = True
         elif event.type == EventType.BACK:
-            if s.scene == Scene.GALLERY:
-                s.scene = Scene.CAMERA
-            elif s.sidebar_open:
-                s.sidebar_open = False
-            else:
-                s.shutdown_requested = True
+            self.back()
             self.mark_all_dirty()
         elif event.type == EventType.TOUCH_DOWN:
             s.touch_down = True
@@ -194,14 +207,14 @@ class AppController:
             s.touch_pos = event.pos
             self._update_sidebar_drag(event.pos)
             if s.scene == Scene.GALLERY:
-                s.gallery_velocity = event.delta * 6.0
+                s.gallery_velocity = event.delta * 7.0
                 s.gallery_swipe_x += event.delta
                 self.mark_all_dirty()
         elif event.type == EventType.TOUCH_UP:
             s.touch_down = False
-            if s.scene == Scene.GALLERY and abs(s.gallery_swipe_x) > 32:
+            if s.scene == Scene.GALLERY and abs(s.gallery_swipe_x) > 24:
                 if s.gallery_swipe_x < 0:
-                    s.gallery_index = min(9999, s.gallery_index + 1)
+                    s.gallery_index += 1
                 else:
                     s.gallery_index = max(0, s.gallery_index - 1)
                 s.gallery_swipe_x = 0.0

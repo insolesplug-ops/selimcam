@@ -30,6 +30,7 @@ def _load_config() -> dict:
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--landscape", action="store_true")
+    parser.add_argument("--webcam", action="store_true")
     args = parser.parse_args()
 
     cfg = _load_config()
@@ -43,7 +44,7 @@ def main():
 
     mapper = ViewportMapper(internal)
     mapper.update(*screen.get_size())
-    renderer = UIRenderer(screen, internal[0], internal[1], cfg.get("ui", {}).get("font_path"))
+    renderer = UIRenderer(screen, internal[0], internal[1], cfg.get("ui", {}).get("font_path"), use_webcam=args.webcam)
     controller = AppController(*internal)
     io = PIIOAdapter(mapper.to_internal)
 
@@ -57,6 +58,8 @@ def main():
             if ev.type.name == "SHUTDOWN":
                 running = False
             controller.handle(ev)
+            if controller.state.shutdown_requested:
+                running = False
 
         mapper.update(*pygame.display.get_surface().get_size())
 
