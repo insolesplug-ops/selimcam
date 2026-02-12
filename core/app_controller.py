@@ -109,7 +109,7 @@ class AppController:
         elif key == "thumb":
             s.scene = Scene.GALLERY
             self.mark_all_dirty()
-        elif key == "filter_next":
+        elif key == "filter_wheel":
             s.filter_idx = (s.filter_idx + 1) % len(FILTERS)
             self.mark_all_dirty()
         elif key == "grid":
@@ -178,7 +178,12 @@ class AppController:
         elif event.type == EventType.SHUTDOWN:
             s.shutdown_requested = True
         elif event.type == EventType.BACK:
-            s.scene = Scene.CAMERA
+            if s.scene == Scene.GALLERY:
+                s.scene = Scene.CAMERA
+            elif s.sidebar_open:
+                s.sidebar_open = False
+            else:
+                s.shutdown_requested = True
             self.mark_all_dirty()
         elif event.type == EventType.TOUCH_DOWN:
             s.touch_down = True
@@ -194,6 +199,13 @@ class AppController:
                 self.mark_all_dirty()
         elif event.type == EventType.TOUCH_UP:
             s.touch_down = False
+            if s.scene == Scene.GALLERY and abs(s.gallery_swipe_x) > 32:
+                if s.gallery_swipe_x < 0:
+                    s.gallery_index = min(9999, s.gallery_index + 1)
+                else:
+                    s.gallery_index = max(0, s.gallery_index - 1)
+                s.gallery_swipe_x = 0.0
+                self.mark_all_dirty()
             s.touch_target = None
 
         s.last_input_latency_ms = (time.perf_counter() - t0) * 1000.0

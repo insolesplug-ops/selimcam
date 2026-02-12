@@ -43,7 +43,7 @@ def main():
 
     mapper = ViewportMapper(internal)
     mapper.update(*screen.get_size())
-    renderer = UIRenderer(screen, cfg.get("ui", {}).get("font_path"))
+    renderer = UIRenderer(screen, internal[0], internal[1], cfg.get("ui", {}).get("font_path"))
     controller = AppController(*internal)
     io = PIIOAdapter(mapper.to_internal)
 

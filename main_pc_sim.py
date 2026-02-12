@@ -43,7 +43,7 @@ def main():
 
     mapper = ViewportMapper(internal)
     mapper.update(*screen.get_size())
-    renderer = UIRenderer(screen, cfg.get("ui", {}).get("font_path"))
+    renderer = UIRenderer(screen, internal[0], internal[1], cfg.get("ui", {}).get("font_path"))
     controller = AppController(*internal)
     io = PCIOAdapter(mapper.to_internal)
 
@@ -74,8 +74,8 @@ def main():
 
         mapper.blit_scaled(screen, frame)
         rects = controller.pop_dirty()
-        if rects:
-            pygame.display.flip()
+        if mapper.view.size == internal and rects:
+            pygame.display.update(rects)
         else:
             pygame.display.flip()
         clock.tick(fps)
