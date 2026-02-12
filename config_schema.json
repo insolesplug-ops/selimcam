@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SelimCam Pi3A+ Runtime Config",
+  "type": "object",
+  "required": ["device", "preview", "memory", "ui", "haptics"],
+  "properties": {
+    "device": {"type": "string", "const": "rpi3a_plus_512mb"},
+    "preview": {
+      "type": "object",
+      "required": ["width", "height", "fps", "proxy_width", "proxy_height"],
+      "properties": {
+        "width": {"type": "integer", "minimum": 160, "maximum": 1280},
+        "height": {"type": "integer", "minimum": 120, "maximum": 720},
+        "fps": {"type": "integer", "minimum": 15, "maximum": 60},
+        "proxy_width": {"type": "integer", "minimum": 80, "maximum": 320},
+        "proxy_height": {"type": "integer", "minimum": 60, "maximum": 240}
+      }
+    },
+    "memory": {
+      "type": "object",
+      "required": ["max_rss_mb", "frame_queue_max", "save_queue_max", "thumb_cache_items"],
+      "properties": {
+        "max_rss_mb": {"type": "integer", "minimum": 256, "maximum": 450},
+        "frame_queue_max": {"type": "integer", "minimum": 1, "maximum": 6},
+        "save_queue_max": {"type": "integer", "minimum": 1, "maximum": 8},
+        "thumb_cache_items": {"type": "integer", "minimum": 8, "maximum": 128}
+      }
+    },
+    "ui": {
+      "type": "object",
+      "required": ["matte_overlay", "touch_target_px", "tap_scale", "tap_anim_ms", "rotation_ms"],
+      "properties": {
+        "matte_overlay": {"type": "boolean"},
+        "touch_target_px": {"type": "integer", "minimum": 40, "maximum": 96},
+        "tap_scale": {"type": "number", "minimum": 0.9, "maximum": 1.0},
+        "tap_anim_ms": {"type": "integer", "minimum": 60, "maximum": 140},
+        "rotation_ms": {"type": "integer", "minimum": 200, "maximum": 250}
+      }
+    },
+    "haptics": {
+      "type": "object",
+      "required": ["enabled", "strength"],
+      "properties": {
+        "enabled": {"type": "boolean"},
+        "strength": {"type": "number", "minimum": 0.0, "maximum": 1.0}
+      }
+    }
+  }
+}

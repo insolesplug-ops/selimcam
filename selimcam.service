@@ -1,0 +1,20 @@
+[Unit]
+Description=SelimCam Pi3A+ Camera UI
+After=network.target graphical.target
+Wants=graphical.target
+
+[Service]
+Type=simple
+User=pi
+WorkingDirectory=/opt/selimcam
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/usr/bin/python3 /opt/selimcam/main_pi_prod.py
+Restart=always
+RestartSec=2
+MemoryMax=420M
+NoNewPrivileges=true
+StandardOutput=append:/var/lib/selimcam/logs/selimcam.log
+StandardError=append:/var/lib/selimcam/logs/selimcam_error.log
+
+[Install]
+WantedBy=multi-user.target

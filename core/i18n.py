@@ -1,0 +1,38 @@
+"""Shared DE/EN strings for SelimCam camera-grade UI."""
+
+I18N = {
+    "en": {
+        "mode": "PRO",
+        "iso": "ISO",
+        "shutter": "S",
+        "ev": "EV",
+        "filter": "Filter",
+        "grid": "Grid",
+        "level": "Level",
+        "haptics": "Haptics",
+        "lang": "Lang",
+        "battery": "Battery",
+        "gallery": "Gallery",
+        "capture": "Capture",
+        "ready": "Ready",
+        "saved": "Saved",
+        "sidebar": "Controls",
+    },
+    "de": {
+        "mode": "PRO",
+        "iso": "ISO",
+        "shutter": "V",
+        "ev": "EV",
+        "filter": "Filter",
+        "grid": "Raster",
+        "level": "Level",
+        "haptics": "Haptik",
+        "lang": "Spr",
+        "battery": "Batterie",
+        "gallery": "Galerie",
+        "capture": "Auslösen",
+        "ready": "Bereit",
+        "saved": "Gespeichert",
+        "sidebar": "Kontrollen",
+    },
+}
