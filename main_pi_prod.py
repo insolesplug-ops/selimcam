@@ -12,7 +12,7 @@ import pygame
 
 from benchmark import _rss_fallback_mb
 from camera_service import CameraConfig, CameraService
-from core.app_controller import AppController
+from core.app_controller import AppController, Scene
 from core.ui_renderer import UIRenderer, ViewportMapper
 from adapters.pi_io import PIIOAdapter
 
@@ -53,6 +53,7 @@ def main():
 
     last = time.perf_counter()
     running = True
+    first_frame = True
     while running:
         for ev in io.poll():
             if ev.type.name == "SHUTDOWN":
@@ -76,6 +77,7 @@ def main():
 
         mapper.blit_scaled(screen, frame)
         pygame.display.flip()
+        first_frame = False
         clock.tick(fps)
 
     cam.stop()

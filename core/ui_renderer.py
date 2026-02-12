@@ -60,6 +60,7 @@ class UIRenderer:
         self.gallery_cache: OrderedDict[Path, pygame.Surface] = OrderedDict()
         self.gallery_cache_max = 24
         self.preview_mode = "DEMO_IMAGE" if self.preview_image is not None else "PROCEDURAL"
+        self._procedural_cached: Optional[pygame.Surface] = None
         self.webcam = None
         if use_webcam:
             self._try_init_webcam()
@@ -149,7 +150,7 @@ class UIRenderer:
         cropped = src.subsurface(rect)
         return pygame.transform.smoothscale(cropped, (self.w, self.h))
 
-    def _procedural_viewfinder(self, t: float) -> pygame.Surface:
+    def _procedural_viewfinder(self, t: float = 0.0) -> pygame.Surface:
         surf = pygame.Surface((self.w, self.h))
         for y in range(self.h):
             k = y / self.h
@@ -224,7 +225,9 @@ class UIRenderer:
             state.preview_mode = "DEMO_IMAGE"
 
         if frame is None:
-            frame = self._procedural_viewfinder(t)
+            if self._procedural_cached is None:
+                self._procedural_cached = self._procedural_viewfinder(t)
+            frame = self._procedural_cached.copy()
             state.preview_mode = "PROCEDURAL"
 
         if time.perf_counter() < state.freeze_until:
@@ -266,7 +269,8 @@ class UIRenderer:
         self._draw_btn(self.hitboxes["back"], pressed and state.touch_target == "back")
         self._txt(self.font_regular, state.t("back"), C_TEXT, (SP12 + 14, SP12 + 11))
 
-        self._txt(self.font_regular, f"{state.t('iso')} {state.iso}   {state.t('shutter')} {state.shutter}   {state.t('ev')} {state.ev:+.1f}", C_TEXT, (92, 12))
+        hud = f"{state.t('iso')} {state.iso}   {state.t('shutter')} {state.shutter}   {state.t('ev')} {state.ev:+.1f}"
+        self._txt(self.font_regular, hud, C_TEXT, (92, 12))
         self._txt(self.font_regular, f"{state.t('filter')}: {state.filter_name.upper()}", C_ACCENT, (92, 34))
         self._icon("battery", (self.w - 108, 12), C_TEXT)
         self._txt(self.font_regular, f"{state.battery_pct}%", C_TEXT, (self.w - 76, 10))

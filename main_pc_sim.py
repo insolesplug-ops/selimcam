@@ -12,7 +12,7 @@ import pygame
 
 from benchmark import _rss_fallback_mb
 from camera_service import CameraConfig, CameraService
-from core.app_controller import AppController
+from core.app_controller import AppController, Scene
 from core.ui_renderer import UIRenderer, ViewportMapper
 from adapters.pc_io import PCIOAdapter
 
@@ -53,6 +53,7 @@ def main():
 
     last = time.perf_counter()
     running = True
+    first_frame = True
     while running:
         for ev in io.poll():
             if ev.type.name == "SHUTDOWN":
@@ -72,7 +73,13 @@ def main():
         cam.pump_preview()
         queue_depth = cam.get_stats().queue_depth
 
-        frame, hitboxes = renderer.compose(controller.state, _rss_fallback_mb(), queue_depth, now)
+        st = controller.state
+        should_render = first_frame or bool(st.dirty_rects) or st.preview_mode == "WEBCAM" or now < st.freeze_until or now < st.pressed_until or now < st.toast_until or (st.scene == Scene.GALLERY and abs(st.gallery_velocity) > 0.01)
+        if not should_render:
+            clock.tick(fps)
+            continue
+
+        frame, hitboxes = renderer.compose(st, _rss_fallback_mb(), queue_depth, now)
         controller.set_hitboxes(hitboxes)
 
         mapper.blit_scaled(screen, frame)
@@ -81,6 +88,7 @@ def main():
             pygame.display.update(rects)
         else:
             pygame.display.flip()
+        first_frame = False
         clock.tick(fps)
 
     cam.stop()

@@ -154,7 +154,10 @@ class AppController:
     def tick(self, dt: float):
         s = self.state
         target = 1.0 if s.sidebar_open else 0.0
+        before = s.sidebar_anim
         s.sidebar_anim += (target - s.sidebar_anim) * min(1.0, dt * 8.0)
+        if abs(s.sidebar_anim - before) > 0.0005:
+            self.mark_all_dirty()
         if s.scene == Scene.GALLERY and abs(s.gallery_velocity) > 0.01:
             s.gallery_swipe_x += s.gallery_velocity * dt
             s.gallery_velocity *= 0.88
