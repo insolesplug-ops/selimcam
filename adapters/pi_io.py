@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from platform.pc_io import PCIOAdapter
+from adapters.pc_io import PCIOAdapter
 
 
 class PIIOAdapter(PCIOAdapter):
