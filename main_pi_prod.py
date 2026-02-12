@@ -11,7 +11,7 @@ import pygame
 
 from core.app_controller import AppController
 from core.ui_renderer import UIRenderer
-from platform.pi_io import PIIOAdapter
+from adapters.pi_io import PIIOAdapter
 
 
 def _load_config() -> dict:

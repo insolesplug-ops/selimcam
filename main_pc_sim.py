@@ -11,7 +11,7 @@ import pygame
 
 from core.app_controller import AppController
 from core.ui_renderer import UIRenderer
-from platform.pc_io import PCIOAdapter
+from adapters.pc_io import PCIOAdapter
 
 
 def _load_config() -> dict:
